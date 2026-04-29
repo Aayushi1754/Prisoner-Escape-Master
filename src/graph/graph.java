@@ -32,7 +32,7 @@ public class graph
         blockedEdge.add(n1 + "-" + n2);
     }
 
-    public void printGraph()
+    public void printGraph() 
      {
         // Graph the printing
         System.out.println("\nGraph (Adjacency List):");

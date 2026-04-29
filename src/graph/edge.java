@@ -1,12 +1,14 @@
 package graph;
 
-public class edge {
+public class edge 
+{
 
     public int src;
     public int dest;
     public int weight;
     public boolean blocked;
-//constructor for edge of grapg
+
+//constructor for edge of graph
     public edge(int src, int dest, int weight)
      {
         this.src = src;
