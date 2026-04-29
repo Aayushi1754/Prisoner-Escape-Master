@@ -6,8 +6,9 @@ public class edge {
     public int dest;
     public int weight;
     public boolean blocked;
-
-    public edge(int src, int dest, int weight) {
+//constructor for edge of grapg
+    public edge(int src, int dest, int weight)
+     {
         this.src = src;
         this.dest = dest;
         this.weight = weight;
