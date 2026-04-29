@@ -80,50 +80,46 @@ return Collections.unmodifiableList(path);
 }
 
 public boolean isEdgeBlocked(int first, int second) {
-if (g == null) {
-return false;
-}
-return g.blockedEdge.contains(first + "-" + second)
-|| g.blockedEdge.contains(second + "-" + first);
-}
+        if (g == null) {
+            return false;
+        }
+        return g.blockedEdge.contains(first + "-" + second)
+                || g.blockedEdge.contains(second + "-" + first);
+    }
 
-public boolean blockEdge(int first, int second) {
-if (g == null || first == second || !
-isValidNode(first, rooms)
-|| !
-isValidNode(second, rooms) || isEdgeBlocked(first, second)) {
-return false;
-}
+    public boolean blockEdge(int first, int second) {
+        if (g == null || first == second || !isValidNode(first, rooms)
+                || !isValidNode(second, rooms) || isEdgeBlocked(first, second)) {
+            return false;
+        }
 
-g.blockEdge(first, second);
-score += 10;
-return true;
-}
+        g.blockEdge(first, second);
+        score += 10;
+        return true;
+    }
 
-public boolean recalculatePath() {
-path = buildCurrentPath();
-idx = 0;
-return !
-path.isEmpty();
-}
+    public boolean recalculatePath() {
+        path = buildCurrentPath();
+        idx = 0;
+        return !path.isEmpty();
+    }
 
-public MoveResult movePrisonerStep() {
-if (path.isEmpty()) {
-return MoveResult.NO_PATH;
-}
-if (idx >= path.size() - 1) {
-return pLoc == target ?
-MoveResult.EXIT_REACHED : MoveResult.NO_MORE_STEPS;
-}
+    public MoveResult movePrisonerStep() {
+        if (path.isEmpty()) {
+            return MoveResult.NO_PATH;
+        }
+        if (idx >= path.size() - 1) {
+            return pLoc == target
+                    ? MoveResult.EXIT_REACHED : MoveResult.NO_MORE_STEPS;
+        }
 
-idx++;
-pLoc = (Integer) path.get(idx);
-if (pLoc == target) {
-return MoveResult.EXIT_REACHED;
-}
-return MoveResult.MOVED;
-}
-
+        idx++;
+        pLoc = (Integer) path.get(idx);
+        if (pLoc == target) {
+            return MoveResult.EXIT_REACHED;
+        }
+        return MoveResult.MOVED;
+    }
 private void configureGridDimensions() {
 cols = (int) Math.ceil(Math.sqrt(rooms));
 rows = (int) Math.ceil((double) rooms / cols);
