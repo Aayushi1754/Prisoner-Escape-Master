@@ -152,11 +152,11 @@ return nodes;
 
 private void generateGridGraph(int targetEdgeCount) {
 
-for (int i = 0; i < rooms - 1; i++) {
+for (int i = 0; i < rooms - one(); i++) {
 g.addEdge(i, i + 1, r.nextInt(9) + 1);
 }
 
-int added = rooms - 1;
+int added = rooms - one();
 while (added < targetEdgeCount) {
 int a = r.nextInt(rooms);
 int b = r.nextInt(rooms);
