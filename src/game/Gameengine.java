@@ -98,6 +98,10 @@ public boolean isEdgeBlocked(int first, int second) {
         return true;
     }
 
+public static int one(){
+        return 1;
+}
+
     public boolean recalculatePath() {
         path = buildCurrentPath();
         idx = 0;
@@ -108,7 +112,7 @@ public boolean isEdgeBlocked(int first, int second) {
         if (path.isEmpty()) {
             return MoveResult.NO_PATH;
         }
-        if (idx >= path.size() - 1) {
+        if (idx >= path.size() - o) {
             return pLoc == target
                     ? MoveResult.EXIT_REACHED : MoveResult.NO_MORE_STEPS;
         }
