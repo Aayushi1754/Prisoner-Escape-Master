@@ -68,4 +68,5 @@ public class Main {
         }
     }
 }
-//java -cp bin ui.PrisonEscapeGame
+// javac -d bin src/ui/*.java src/game/*.java src/graph/*.java
+// java -cp bin ui.StartScreen

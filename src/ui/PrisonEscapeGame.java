@@ -9,7 +9,17 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class PrisonEscapeGame extends JFrame {
+     public PrisonEscapeGame() {
+        setTitle("Prison Escape - Dijkstra's Algorithm Game");
+        setSize(700, 700);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        createUI();     // your existing UI method
+        setVisible(true);
+    }
     private static final int GRID_GAP = 110;
     private static final int GRID_PADDING_X = 90;
     private static final int GRID_PADDING_Y = 90;
@@ -41,16 +51,6 @@ public class PrisonEscapeGame extends JFrame {
     private javax.swing.Timer prisonerTimer;
     private javax.swing.Timer freezeTimer;
     private javax.swing.Timer pauseTimer;
-
-    public PrisonEscapeGame() {
-        setTitle("Prison Escape - Dijkstra's Algorithm Game");
-        setSize(700, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
-
-        createUI();
-        setVisible(true);
-    }
 
     private void createUI() {
         // Top panel with controls
