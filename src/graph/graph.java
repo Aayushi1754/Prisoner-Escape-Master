@@ -5,7 +5,7 @@ public class graph {
 public int node;
 public List<List<int[]>> adj = new ArrayList<>();
 public Set blockedEdge = new HashSet<>();
-
+//creating
 public graph(int node) {
 this.node = node;
 adj = new ArrayList<>();
@@ -15,14 +15,14 @@ for (int i = 0; i < node; i++) {
 adj.add(new ArrayList<>());
 }
 }
-
+//adding edges
 public void addEdge(int n2, int n1, int w) {
 adj.get(n2).
 add(new int[]{n1, w});
 adj.get(n1).
 add(new int[]{n2, w});
 }
-
+//checking blocked edhges
 public void blockEdge(int n2, int n1) {
 blockedEdge.add(n2 + "-" + n1);
 blockedEdge.add(n1 + "-" + n2);
