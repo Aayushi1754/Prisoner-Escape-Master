@@ -4,7 +4,6 @@ import graph.edge;
 import graph.graph;
 import graph.node;
 import java.util.*;
-import java.util.List;
 
 public class Gameengine {
 private static final int MIN_EDGE_WEIGHT = 1;
@@ -18,7 +17,7 @@ private final Random r = new Random();
 
 private graph g;
 private node[] nodelist;
-private List path = new ArrayList<>();
+private List<Integer> path = new ArrayList<>();
 private int rooms;
 private int cols;
 private int rows;
@@ -26,20 +25,23 @@ private int pLoc;
 private int target;
 private int score;
 private int idx;
+private int generatedEdges;
 
 public void initializeGame(int nodes, int edgeCount, int src, int dst) {
-validateSetup(nodes, edgeCount, src, dst);
 
 rooms = nodes;
+configureGridDimensions();
+validateSetup(nodes, edgeCount, src, dst);
+int normalizedEdgeCount = normalizeRequestedEdgeCount(edgeCount);
 pLoc = src;
 target = dst;
 score = 0;
 idx = 0;
-configureGridDimensions();
+generatedEdges = 0;
 
 g = new graph(nodes);
 nodelist = createNodes(nodes);
-generateGridGraph(edgeCount);
+generatedEdges = generateGridGraph(normalizedEdgeCount);
 recalculatePath();
 }
 
@@ -74,8 +76,11 @@ return score;
 public int getPathIndex() {
 return idx;
 }
+public int getGeneratedEdges() {
+return generatedEdges;
+}
 
-public List getCurrentPath() {
+public List<Integer> getCurrentPath(){
 return Collections.unmodifiableList(path);
 }
 
@@ -89,7 +94,8 @@ public boolean isEdgeBlocked(int first, int second) {
 
     public boolean blockEdge(int first, int second) {
         if (g == null || first == second || !isValidNode(first, rooms)
-                || !isValidNode(second, rooms) || isEdgeBlocked(first, second)) {
+                || !isValidNode(second, rooms) || isEdgeBlocked(first, second)
+                || !isEdgePresent(first, second)) {
             return false;
         }
 
@@ -112,7 +118,7 @@ public static int one(){
         if (path.isEmpty()) {
             return MoveResult.NO_PATH;
         }
-        if (idx >= path.size() - o) {
+        if (idx >= path.size() - 1) {
             return pLoc == target
                     ? MoveResult.EXIT_REACHED : MoveResult.NO_MORE_STEPS;
         }
@@ -137,8 +143,9 @@ if (!
 isValidNode(src, nodes) || !isValidNode(dst, nodes)) {
 throw new IllegalArgumentException("Invalid input is given by user");
 }
-if (edgeCount < nodes - 1 || edgeCount > nodes * (nodes - 1) / 2) {
-throw new IllegalArgumentException("Edge count should be between " + (nodes - 1) + " and " + (nodes * (nodes - 1) / 2));
+int maxSegmentEdges = maxGridSegmentEdges();
+if (edgeCount < nodes - 1) {
+throw new IllegalArgumentException("Edge count should be at least " + (nodes - 1));
 }
 }
 
@@ -150,28 +157,35 @@ nodes[i] = new node();
 return nodes;
 }
 
-private void generateGridGraph(int targetEdgeCount) {
-
-for (int i = 0; i < rooms - one(); i++) {
-g.addEdge(i, i + 1, r.nextInt(9) + 1);
+private int generateGridGraph(int targetEdgeCount) {
+for (int node = 1; node < rooms; node++) {
+int parent = (node % cols == 0) ? node - cols : node - 1;
+g.addEdge(parent, node, randomWeight());
 }
 
+List<int[]> candidates = buildAdjacentGridEdgeCandidates();
+Collections.shuffle(candidates, r);
+
 int added = rooms - one();
-while (added < targetEdgeCount) {
-int a = r.nextInt(rooms);
-int b = r.nextInt(rooms);
-if (a != b && !g.adj.get(a).stream().anyMatch(e -> e[0] == b)) {
-g.addEdge(a, b, r.nextInt(9) + 1);
+for (int[] candidate : candidates) {
+if (added >= targetEdgeCount) {
+break;
+}
+int a = candidate[0];
+int b = candidate[1];
+if (!isEdgePresent(a, b)) {
+g.addEdge(a, b, randomWeight());
 added++;
 }
 }
+return added;
 }
 
 private int randomWeight() {
 return r.nextInt(MAX_EDGE_WEIGHT - MIN_EDGE_WEIGHT + 1) + MIN_EDGE_WEIGHT;
 }
 
-private List buildCurrentPath() {
+private List<Integer> buildCurrentPath() {
 @SuppressWarnings("unchecked")
 ArrayList<edge>[] graphData = new ArrayList[rooms];
 for (int i = 0; i < rooms; i++) {
@@ -190,8 +204,54 @@ return Dijkstra.shortestPath(graphData, nodelist, pLoc, target);
 private String edgeKey(int first, int second) {
 return Math.min(first, second) + "-" + Math.max(first, second);
 }
+private int maxGridSegmentEdges() {
+return buildAdjacentGridEdgeCandidates().size();
+}
+
+private int normalizeRequestedEdgeCount(int edgeCount) {
+return Math.min(edgeCount, maxGridSegmentEdges());
+}
+
+private List<int[]> buildAdjacentGridEdgeCandidates() {
+List<int[]> candidates = new ArrayList<>();
+for (int node = 0; node < rooms; node++) {
+int row = node / cols;
+int col = node % cols;
+
+int right = node + 1;
+if (col + 1 < cols && right < rooms) {
+candidates.add(new int[]{node, right});
+}
+
+int down = node + cols;
+if (row + 1 < rows && down < rooms) {
+candidates.add(new int[]{node, down});
+}
+
+int downRight = node + cols + 1;
+if (row + 1 < rows && col + 1 < cols && downRight < rooms) {
+candidates.add(new int[]{node, downRight});
+}
+
+int downLeft = node + cols - 1;
+if (row + 1 < rows && col - 1 >= 0 && downLeft < rooms) {
+candidates.add(new int[]{node, downLeft});
+}
+}
+return candidates;
+}
+
+private boolean isEdgePresent(int first, int second) {
+for (int[] neighbor : g.adj.get(first)) {
+if (neighbor[0] == second) {
+return true;
+}
+}
+return false;
+}
 
 private boolean isValidNode(int nodeIndex, int totalNodes) {
 return nodeIndex >= 0 && nodeIndex < totalNodes;
 }
 }
+
